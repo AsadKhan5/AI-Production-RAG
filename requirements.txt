@@ -1,0 +1,9 @@
+langchain-anthropic
+langgraph
+langsmith
+fastapi
+uvicorn
+slowapi
+pydantic-settings
+python-dotenv
+langchain-openai
