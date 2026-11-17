@@ -5,7 +5,7 @@ Uses pydantic-settings for validated environment variables.
 """
 
 from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 load_dotenv()
@@ -19,9 +19,10 @@ class Settings(BaseSettings):
     fallback_model: str = "gpt-4o-mini"
 
     # LangSmith
-    langchain_tracing_v2: bool = True
-    langchain_api_key: str = ""
-    langchain_project: str = "production-api"
+    langsmith_tracing: bool = True
+    langsmith_api_key: str = ""
+    langsmith_project: str = "production-api"
+    langsmith_endpoint: str = "https://api.smith.langchain.com"
 
     # Application
     app_env: str = "development"
@@ -30,11 +31,11 @@ class Settings(BaseSettings):
     cache_ttl_seconds: int = 300
     max_retries: int = 3
 
-    model_config = {
-        "env_file": ".env",
-        "env_file_encoding": "utf-8",
-        "extra": "ignore"
-    }
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     @property
     def is_production(self) -> bool:
@@ -43,5 +44,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Cached settings instance - loaded once, reused everywhere."""
     return Settings()

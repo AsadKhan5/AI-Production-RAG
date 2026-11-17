@@ -32,8 +32,8 @@ from app.security import SecurityPipeline
 from app.cache import ResponseCache
 from app.monitoring import get_logger, MetricsCollector, RequestTimer
 from app.agent import ProductionAgent
+load_dotenv(override=True)
 
-load_dotenv()
 
 
 
@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
     logger.info("Starting production API...", extra={"extra_data": {
         "environment": settings.app_env,
         "primary_model": settings.primary_model,
-        "tracing_enabled": settings.langchain_tracing_v2,
+        "tracing_enabled": settings.langsmith_tracing,
     }})
 
     # Initialize components
@@ -112,8 +112,8 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # =============================================
 
 @app.post("/chat", response_model=ChatResponse)
-@limiter.limit(get_settings().rate_limit)
 @traceable(name="chat_endpoint")
+@limiter.limit(get_settings().rate_limit)
 async def chat(request: Request, body: ChatRequest):
     """
     Main chat endpoint.
@@ -214,8 +214,6 @@ async def chat(request: Request, body: ChatRequest):
         processing_time_ms=round(timer.elapsed_ms, 2),
         security_notes=security_notes,
     )
-    
-    
     
     
 @app.get("/health", response_model=HealthResponse)
